@@ -512,7 +512,7 @@ def visulize_span_pattern(frequent_patterns):
     patterns_df['pattern_str'] = patterns_df['pattern'].apply(lambda x: '→'.join(map(str, x)))  # 使用apply逐行处理
     # 修正点2：支持度标准化（确保processed_df已定义）
     patterns_df['support'] = patterns_df['support'] / len(processed_df['categories'])
-    patterns_df.to_csv('sequential_output/span_patterns.csv', index=False)
+    patterns_df.to_csv('sequential_output/sequential_patterns.csv', index=False)
     patterns_df['pattern_str'] = patterns_df['pattern'].apply(lambda x: '→'.join(map(str, x)))
 
     plt.figure(figsize=(15, 8))
