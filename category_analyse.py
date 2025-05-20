@@ -54,27 +54,12 @@ df_fp = pd.DataFrame(te_ary, columns=te.columns_)
 # 执行FP-growth算法（支持度≥0.02）
 frequent_itemsets = fpgrowth(df_fp, min_support=0.02, use_colnames=True)
 
-# 生成关联规则（置信度≥0.5）
-rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
-
-# 特别关注电子产品关联规则
-electronics_rules = rules[
-    rules['consequents'].apply(lambda x: '电子产品' in x) |
-    rules['antecedents'].apply(lambda x: '电子产品' in x)
-]
-
 # 结果展示
 print("频繁项集：")
 print(frequent_itemsets.sort_values(by='support', ascending=False).head(10))
 
 patterns_df = pd.DataFrame(frequent_itemsets, columns=["support", "pattern"])
 patterns_df.to_csv("output/category_patterns.csv", index=False)
-
-print("\n关联规则：")
-print(rules.sort_values(by=['support', 'confidence'], ascending=False).head(10))
-
-print("\n关联规则（特别关注电子产品）：")
-print(electronics_rules.sort_values(by=['support', 'confidence'], ascending=False).head(10))
 
 rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.4)
 
@@ -389,6 +374,12 @@ electronics_rules = rules[
     rules['consequents'].apply(lambda x: '电子产品' in x) |
     rules['antecedents'].apply(lambda x: '电子产品' in x)
 ]
+
+print("\n关联规则：")
+print(rules.sort_values(by=['support', 'confidence'], ascending=False).head(10))
+
+print("\n关联规则（特别关注电子产品）：")
+print(electronics_rules.sort_values(by=['support', 'confidence'], ascending=False).head(10))
 
 rules['antecedents'] = rules['antecedents'].apply(lambda x: ', '.join(map(str, x)))
 rules['consequents'] = rules['consequents'].apply(lambda x: ', '.join(map(str, x)))
