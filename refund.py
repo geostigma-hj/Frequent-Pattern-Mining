@@ -471,10 +471,12 @@ else:
     if os.path.exists('processed_df.csv'):
         processed_df = pd.read_csv('processed_df.csv')
 
-refund_order_df = refund_visulize(processed_df[:100000], 'output2/refund_patterns')
+refund_order_df = refund_visulize(processed_df, 'output/refund_patterns')
 
 # 生成关联规则（置信度≥0.4）
-refund_frequent_itemsets = analyze_refund_patterns(processed_df[:100000]) 
+refund_frequent_itemsets = analyze_refund_patterns(processed_df) 
+patterns_df = pd.DataFrame(refund_frequent_itemsets, columns=["support", "pattern"])
+patterns_df.to_csv("output/refund_patterns.csv", index=False)
 refund_rules= association_rules(refund_frequent_itemsets, metric="confidence", min_threshold=0.4)
 for threshold in [0.4, 0.3, 0.2, 0.1, 0.005]:
     refund_rules = association_rules(refund_frequent_itemsets, metric="confidence", min_threshold=threshold)
@@ -495,7 +497,8 @@ top_rules = refund_rules.nlargest(10, 'lift')
 
 # 自定义标签：将前件转换为商品组合描述
 labels = top_rules['antecedents'].apply(
-    lambda x: " + ".join([item for item in x if item not in ['已退款', '部分退款']])
+    lambda x: "\n".join([item.strip() for item in str(x).split(',') 
+                        if item not in ['已退款', '部分退款']])
 )
 
 sns.barplot(
@@ -511,13 +514,13 @@ plt.xlabel('提升度（Lift）', fontsize=12)
 plt.ylabel('商品组合', fontsize=12)
 plt.legend(title='退款状态', bbox_to_anchor=(1.05, 1))
 plt.tight_layout()
-plt.savefig('refund_patterns.png', dpi=300)
+plt.savefig('output/refund_patterns.png', dpi=300)
 plt.close()
 
 refund_rules.sort_values(by=['support', 'confidence'], ascending=False)
 
 if not refund_rules.empty:
     # 保存规则到CSV
-    refund_rules.to_csv('output2/refund_rules.csv', index=False)
+    refund_rules.to_csv('output/refund_rules.csv', index=False)
     # 可视化规则
-    visualize_rules(refund_rules, '退款商品关联规则', 'output2/refund_rules')
+    visualize_rules(refund_rules, '退款商品关联规则', 'output/refund_rules')

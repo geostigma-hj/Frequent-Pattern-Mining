@@ -67,6 +67,9 @@ electronics_rules = rules[
 print("频繁项集：")
 print(frequent_itemsets.sort_values(by='support', ascending=False).head(10))
 
+patterns_df = pd.DataFrame(frequent_itemsets, columns=["support", "pattern"])
+patterns_df.to_csv("output/category_patterns.csv", index=False)
+
 print("\n关联规则：")
 print(rules.sort_values(by=['support', 'confidence'], ascending=False).head(10))
 

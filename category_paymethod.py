@@ -466,6 +466,10 @@ else:
 
 # 执行分析
 payment_frequent_itemsets = payment_category_analysis(processed_df)
+
+patterns_df = pd.DataFrame(payment_frequent_itemsets, columns=["support", "pattern"])
+patterns_df.to_csv("output/payment_category_patterns.csv", index=False)
+
 payment_rules = association_rules(payment_frequent_itemsets, metric="confidence", min_threshold=0.6)
 for threshold in [0.6, 0.5, 0.4, 0.3, 0.2, 0.1]:
     payment_rules = association_rules(payment_frequent_itemsets, metric="confidence", min_threshold=threshold)
